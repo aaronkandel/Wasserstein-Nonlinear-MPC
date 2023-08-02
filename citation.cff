@@ -1,0 +1,10 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below. This software uses the reformulation from Duan et al., so please cite their paper as the primary source as well."
+authors:
+  - family-names: Kandel
+    given-names: Aaron
+    orcid: https://orcid.org/0000-0001-6973-7308
+title: "Wasserstein Nonlinear MPC"
+version: 2.0.4
+doi: 
+date-released: 2023-08-02
