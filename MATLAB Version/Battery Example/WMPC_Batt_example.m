@@ -136,15 +136,15 @@ for i = 1:(tmax/dt)
         Vhat = abs(resid(end,1:end));
         disp(max(resid))
         
-        r = Vhat; 
+        re = Vhat; 
         N = i; % Number of data samples
         beta = 0.99;%0.975;% Confidence level, or probability true distribution lies within Wasserstein ambiguity set
         rho = 0.025;%0.0025; % Allowed risk level for chance constraint
     
         % Normalize/center residuals distribution:
-        SIG = std(r)^2;
-        mu = mean(r);        
-        thet = (SIG^(-0.5))*(r - mu); % normalized/centered residuals
+        SIG = std(re)^2;
+        mu = mean(re);        
+        thet = (SIG^(-0.5))*(re - mu); % normalized/centered residuals
         
         % Compute C:
         options = optimoptions('fmincon','display','none');
