@@ -9,5 +9,6 @@ This script requires the MATLAB deep learning toolbox. Python versions will be a
 Note: Sometimes the AV example will ''false start'' and not move appreciably from the initial point. This is a potential issue in model training, but occurs infrequently. If that scenario occurs, feel free to restart the simulation.
 
 
+![newplotrun3](https://github.com/aaronkandel/Wasserstein-Nonlinear-MPC/assets/43686513/29bac362-5b48-46a3-a043-c538f1fba9ce)
 
-![readmeFig2](https://github.com/aaronkandel/Wasserstein-Nonlinear-MPC/assets/43686513/6a63ac84-af4d-4c55-b829-ab6fdfe12524)
+
