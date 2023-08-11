@@ -176,8 +176,8 @@ for i = 1:(tmax/dt)
     end
 
     % OVERRIDE DRO:
-% 	override_DRO = 0; % Don't override
-    override_DRO = 1; % Override
+	override_DRO = 0; % Don't override
+%     override_DRO = 1; % Override
 %     r(i) = 0;
 
 
