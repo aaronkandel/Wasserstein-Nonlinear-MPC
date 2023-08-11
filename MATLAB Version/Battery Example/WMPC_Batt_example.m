@@ -176,8 +176,8 @@ for i = 1:(tmax/dt)
     end
 
     % OVERRIDE DRO:
-	override_DRO = 0; % Don't override
-%     override_DRO = 1; % Override
+% 	override_DRO = 0; % Don't override
+    override_DRO = 1; % Override
 %     r(i) = 0;
 
 
@@ -221,7 +221,7 @@ for i = 1:(tmax/dt)
             evalXPert = [xSimsPert(:,:,j);u2(j,:)];
             nextStatePert = NNdyn(evalXPert);
             xSimsPert(:,:,j+1) = nextStatePert(1:3,:);
-            nextVPert = NNdynV(evalX2);
+            nextVPert = NNdynV(evalXPert);
             VsimNNPert(:,:,j) = nextVPert;
         end
         
@@ -301,7 +301,7 @@ for i = 1:(tmax/dt)
         ylabel('Voltage [V]')
         legend('DRO-MPC','Constraint','Location','best')
         subplot(2,3,[4,5,6])
-        plot(tint(1:i), f)
+        plot(tint(1:i), r)
         grid on
         xlabel('Time [s]')
         ylabel('DRO Offset [V]')
