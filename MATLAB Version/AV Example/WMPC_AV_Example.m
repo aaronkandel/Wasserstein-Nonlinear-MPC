@@ -87,8 +87,8 @@ xVec(3,1) = pi/4;
 xVec(1,1) = 5;
 xVec(2,1) = 10;
 control = zeros(2,length(tint));
-NNdyn = fitnet(10);
-NNdynV = fitnet(10);
+NNdyn = fitnet(3);
+NNdynV = fitnet(3);
 
 metrics = zeros(tmax/dt,8);
 
