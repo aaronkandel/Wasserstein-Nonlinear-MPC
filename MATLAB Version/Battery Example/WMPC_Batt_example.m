@@ -101,25 +101,24 @@ for i = 1:(tmax/dt)
         NNdynV = fitnet(num_neurons);
     end
 
-    % Training 
+    % Periodically reset model parameters before training: 
     if i > 1 & (mod(i,5)==0 | i<=5)
 
-        % Periodically reset model parameters before training: 
-        NNdyn = fitnet(2);
-        NNdynV = fitnet(2);
-
-
-
-        % Train Models:
-        NNdyn.trainParam.showWindow=0;
-        NNdyn = train(NNdyn, [SOC(1:i-1)';vrc1(1:end-1)';vrc2(1:end-1)';control'], [SOC(2:end)';vrc1(2:end)';vrc2(2:end)']);     
-
-        
-        NNdynV.trainParam.showWindow=0;
-        NNdynV.trainParam.epochs = 10;
-        NNdynV = train(NNdynV, [SOC(1:i-1)';vrc1(1:end-1)';vrc2(1:end-1)';control'], [Vsim']);        
-        
+         
+        NNdyn = fitnet(num_neurons);
+        NNdynV = fitnet(num_neurons);
+                
     end
+
+    % Train Models:
+    NNdyn.trainParam.showWindow=0;
+    NNdyn = train(NNdyn, [SOC(1:i-1)';vrc1(1:end-1)';vrc2(1:end-1)';control'], [SOC(2:end)';vrc1(2:end)';vrc2(2:end)']);     
+
+    
+    NNdynV.trainParam.showWindow=0;
+    NNdynV.trainParam.epochs = 10;
+    NNdynV = train(NNdynV, [SOC(1:i-1)';vrc1(1:end-1)';vrc2(1:end-1)';control'], [Vsim']);        
+
     
 
     % Horizon increment rule:
@@ -135,7 +134,7 @@ for i = 1:(tmax/dt)
 
         resid = abs(NNdynV([SOC(1:i-1)';vrc1(1:end-1)';vrc2(1:end-1)';control'])-Vsim');
         Vhat = abs(resid(end,1:end));
-        
+        disp(max(resid))
         
         r = Vhat; 
         N = i; % Number of data samples
@@ -162,9 +161,9 @@ for i = 1:(tmax/dt)
         sig_high = 150;
         
         % Compute \sigma via trisection search:
-        while (sig_high - sig_low) > 1e-3 
+        while (sig_high - sig_low) > 1e-4
             sig = (sig_high + sig_low)/2;
-            [lambda, h_sig_lambda] = triSearch(sig, 0, 100, epsilon, thet);           
+            [lambda, h_sig_lambda] = triSearch(sig, 0, 50, epsilon, thet);           
             if h_sig_lambda > rho % risk
                 sig_low = sig;
             else
@@ -256,7 +255,7 @@ for i = 1:(tmax/dt)
         
         
     else  % Initial known safe control inputs:
-        control(i,1) = 25*rand();
+        control(i,1) = 10 + 2.5*rand();
     end
     
         
