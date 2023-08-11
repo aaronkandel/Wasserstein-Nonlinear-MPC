@@ -86,16 +86,19 @@ vrc2 = 0;
 control = 0;
 VOC(1) = interp1(soc,voc,SOC); % [V] initial OCV
 Vsim(1) = VOC(1) + vrc1(1) + vrc2 + R_2(1)*control(1); 
-NNdyn = fitnet(2); 
-NNdynV = fitnet(2);
+num_neurons = 3;
+NNdyn = fitnet(num_neurons);   % 2
+NNdynV = fitnet(num_neurons);  % 2
 
 for i = 1:(tmax/dt)
     tic  % Keep track of iteration time
-
+%     if i>5
+%         disp([i,Vsim(i-1),Finv(i-1)])
+%     end
     % Training logic that helps:
     if i==5
-        NNdyn = fitnet(2);
-        NNdynV = fitnet(2);
+        NNdyn = fitnet(num_neurons);
+        NNdynV = fitnet(num_neurons);
     end
 
     % Training 
@@ -136,7 +139,7 @@ for i = 1:(tmax/dt)
         
         r = Vhat; 
         N = i; % Number of data samples
-        beta = 0.975;%0.975;% Confidence level, or probability true distribution lies within Wasserstein ambiguity set
+        beta = 0.99;%0.975;% Confidence level, or probability true distribution lies within Wasserstein ambiguity set
         rho = 0.025;%0.0025; % Allowed risk level for chance constraint
     
         % Normalize/center residuals distribution:
@@ -161,7 +164,7 @@ for i = 1:(tmax/dt)
         % Compute \sigma via trisection search:
         while (sig_high - sig_low) > 1e-3 
             sig = (sig_high + sig_low)/2;
-            [lambda, h_sig_lambda] = triSearch(sig, 0, 50, epsilon, thet);           
+            [lambda, h_sig_lambda] = triSearch(sig, 0, 100, epsilon, thet);           
             if h_sig_lambda > rho % risk
                 sig_low = sig;
             else
@@ -317,7 +320,7 @@ end % END FOR
 
 %%
 
-save('batt_data_run_00.mat')
+save('batt_data_run_01_ndro.mat')
 
 
 
