@@ -244,8 +244,12 @@ for i = 1:(tmax/dt)
             bestsafeJ = find(FeasCost == min(FeasCost));
             actInd = FeasAct(:,bestsafeJ(1),:);
 
-            
-            control(:,i) = actInd(:,:,1);
+            if isempty(actInd)==1
+                ind_best = find(mv == max(mv));
+                control(:,i) = uSim(:,ind_best(1),1);
+            else
+                control(:,i) = actInd(:,:,1);
+            end
         end
         
         
