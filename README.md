@@ -1,3 +1,6 @@
+![diag_wmpc(2)](https://github.com/aaronkandel/Wasserstein-Nonlinear-MPC/assets/43686513/4edbf30b-f42c-4454-a6e6-082db2780433)
+
+
 # Wasserstein-Nonlinear-MPC
 
 This is the code corresponding to the case studies in the following paper:
