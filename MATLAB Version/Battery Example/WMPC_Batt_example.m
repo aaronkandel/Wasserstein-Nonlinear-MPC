@@ -102,7 +102,7 @@ for i = 1:(tmax/dt)
     end
 
     % Periodically reset model parameters before training: 
-    if i > 1 & (mod(i,5)==0 | i<=5)
+    if i > 1 & (mod(i,5)==0 | i<=5) & (i<=100)
 
          
         NNdyn = fitnet(num_neurons);
@@ -127,10 +127,16 @@ for i = 1:(tmax/dt)
     state = [ones(1, length(SOC)); SOC';SOC'.^2;SOC'.^3;vrc1';vrc2'];
     states = [SOC';vrc1';vrc2'];   
     
+
+    % OVERRIDE DRO:
+% 	override_DRO = 0; % Don't override
+    override_DRO = 1; % Override
+%     r(i) = 0;
+
     % Calculate residuals:
     % This implementation assumes residuals are uncorrelated through 
     % time, so only single-step residuals are computed:  
-    if i > 2  
+    if i > 2 && override_DRO==0
 
         resid = abs(NNdynV([SOC(1:i-1)';vrc1(1:end-1)';vrc2(1:end-1)';control'])-Vsim');
         Vhat = abs(resid(end,1:end));
@@ -173,14 +179,13 @@ for i = 1:(tmax/dt)
 
         % Define ambiguity set:    
         r(i) = abs((SIG^0.5)*sig + mu);
-    else
+    elseif override_DRO==0
         r(i) = Vsim(1) - VOC(1);
+    else
+        r(i) = 0;
     end
 
-    % OVERRIDE DRO:
-	override_DRO = 0; % Don't override
-%     override_DRO = 1; % Override
-%     r(i) = 0;
+    
 
 
     % MPC formulation:
@@ -277,7 +282,7 @@ for i = 1:(tmax/dt)
     
 
     % Plot results periodically:
-    if mod(i,10) == 0
+    if mod(i,20) == 0
         clf
         subplot(231)
         hold on
@@ -319,7 +324,7 @@ end % END FOR
 
 %%
 
-save('batt_data_run_01_ndro.mat')
+save('batt_ndro_1.mat')
 
 
 
