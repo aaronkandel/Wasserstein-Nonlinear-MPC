@@ -90,6 +90,8 @@ num_neurons = 3;
 NNdyn = fitnet(num_neurons);   % 2
 NNdynV = fitnet(num_neurons);  % 2
 
+minResidNum = 2;
+
 for i = 1:(tmax/dt)
     tic  % Keep track of iteration time
 %     if i>5
@@ -107,18 +109,30 @@ for i = 1:(tmax/dt)
          
         NNdyn = fitnet(num_neurons);
         NNdynV = fitnet(num_neurons);
+
+        % Train Models:
+        NNdyn.trainParam.showWindow=0;
+        NNdyn = train(NNdyn, [SOC(1:i-1)';vrc1(1:end-1)';vrc2(1:end-1)';control'], [SOC(2:end)';vrc1(2:end)';vrc2(2:end)']);     
+    
+        
+        NNdynV.trainParam.showWindow=0;
+        NNdynV.trainParam.epochs = 10;
+        NNdynV = train(NNdynV, [SOC(1:i-1)';vrc1(1:end-1)';vrc2(1:end-1)';control'], [Vsim']);        
+
                 
+    elseif i > 1 & (mod(i,5)==0 | i<=5) 
+        % Train Models:
+        NNdyn.trainParam.showWindow=0;
+        NNdyn = train(NNdyn, [SOC(1:i-1)';vrc1(1:end-1)';vrc2(1:end-1)';control'], [SOC(2:end)';vrc1(2:end)';vrc2(2:end)']);     
+    
+        
+        NNdynV.trainParam.showWindow=0;
+        NNdynV.trainParam.epochs = 10;
+        NNdynV = train(NNdynV, [SOC(1:i-1)';vrc1(1:end-1)';vrc2(1:end-1)';control'], [Vsim']);        
+
     end
 
-    % Train Models:
-    NNdyn.trainParam.showWindow=0;
-    NNdyn = train(NNdyn, [SOC(1:i-1)';vrc1(1:end-1)';vrc2(1:end-1)';control'], [SOC(2:end)';vrc1(2:end)';vrc2(2:end)']);     
-
     
-    NNdynV.trainParam.showWindow=0;
-    NNdynV.trainParam.epochs = 10;
-    NNdynV = train(NNdynV, [SOC(1:i-1)';vrc1(1:end-1)';vrc2(1:end-1)';control'], [Vsim']);        
-
     
 
     % Horizon increment rule:
@@ -129,14 +143,14 @@ for i = 1:(tmax/dt)
     
 
     % OVERRIDE DRO:
-% 	override_DRO = 0; % Don't override
-    override_DRO = 1; % Override
-%     r(i) = 0;
+	override_DRO = 0; % Don't override
+%     override_DRO = 1; % Override
+
 
     % Calculate residuals:
     % This implementation assumes residuals are uncorrelated through 
     % time, so only single-step residuals are computed:  
-    if i > 2 && override_DRO==0
+    if i > minResidNum && override_DRO==0
 
         resid = abs(NNdynV([SOC(1:i-1)';vrc1(1:end-1)';vrc2(1:end-1)';control'])-Vsim');
         Vhat = abs(resid(end,1:end));
@@ -145,7 +159,7 @@ for i = 1:(tmax/dt)
         re = Vhat; 
         N = i; % Number of data samples
         beta = 0.99;%0.975;% Confidence level, or probability true distribution lies within Wasserstein ambiguity set
-        rho = 0.025;%0.0025; % Allowed risk level for chance constraint
+        rho = 0.0025;%0.0025; % Allowed risk level for chance constraint
     
         % Normalize/center residuals distribution:
         SIG = std(re)^2;
@@ -164,10 +178,10 @@ for i = 1:(tmax/dt)
         % \sigma is the side length of a DRO hypercube we fit around the
         % empirical residuals distribution:
         sig_low = 0;
-        sig_high = 150;
+        sig_high = 50;
         
         % Compute \sigma via trisection search:
-        while (sig_high - sig_low) > 1e-4
+        while (sig_high - sig_low) > 1e-2
             sig = (sig_high + sig_low)/2;
             [lambda, h_sig_lambda] = triSearch(sig, 0, 50, epsilon, thet);           
             if h_sig_lambda > rho % risk
@@ -324,7 +338,7 @@ end % END FOR
 
 %%
 
-save('batt_ndro_1.mat')
+save('dro_mr5_1.mat')  % batt_dro_4
 
 
 
